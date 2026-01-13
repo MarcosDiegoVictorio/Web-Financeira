@@ -9,7 +9,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
-// --- ÁREA DE TIPOS ---
+// --- TIPOS ---
 interface Lancamento {
   id: string;
   tipo: number;
@@ -23,9 +23,7 @@ interface CardProps {
   Icone: ElementType;
 }
 
-// --- ÁREA DE COMPONENTES AUXILIARES (FORA DO DASHBOARD) ---
-
-// 1. Movi o CardResumo para cá. Agora ele é independente!
+// --- COMPONENTE DO CARTÃO (Separado) ---
 function CardResumo({ titulo, valor, cor, Icone }: CardProps) {
   return (
     <Paper elevation={3} sx={{ padding: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -40,10 +38,11 @@ function CardResumo({ titulo, valor, cor, Icone }: CardProps) {
   );
 }
 
-// --- COMPONENTE PRINCIPAL ---
+// --- TELA PRINCIPAL ---
 export default function Dashboard() {
   const navigate = useNavigate();
   
+  // ESTADOS (Aqui guardamos os valores)
   const [saldo, setSaldo] = useState(0);
   const [entradas, setEntradas] = useState(0);
   const [saidas, setSaidas] = useState(0);
@@ -57,6 +56,7 @@ export default function Dashboard() {
       let totalEntrada = 0;
       let totalSaida = 0;
 
+      // O LOOP DA MATEMÁTICA
       lista.forEach((item: Lancamento) => {
         if (item.tipo === 1) {
           totalEntrada += item.valor;
@@ -65,12 +65,13 @@ export default function Dashboard() {
         }
       });
 
+      // ATUALIZA A TELA (Conecta a matemática com o visual)
       setEntradas(totalEntrada);
       setSaidas(totalSaida);
       setSaldo(totalEntrada - totalSaida);
 
     } catch (erro) {
-      console.error("Erro ao calcular totais", erro);
+      console.error("Erro ao calcular", erro);
     }
   }
     calcularTotais();
@@ -94,7 +95,7 @@ export default function Dashboard() {
         <Grid size={{ xs: 12, sm: 4 }}>
           <CardResumo 
             titulo="Entradas" 
-            valor={entradas} 
+            valor={entradas} // Conectado com o estado 'entradas'
             cor="green" 
             Icone={ArrowUpwardIcon} 
           />
@@ -104,7 +105,7 @@ export default function Dashboard() {
         <Grid size={{ xs: 12, sm: 4 }}>
           <CardResumo 
             titulo="Saídas" 
-            valor={saidas} 
+            valor={saidas} // Conectado com o estado 'saidas' (Onde está o 290.06)
             cor="red" 
             Icone={ArrowDownwardIcon} 
           />
