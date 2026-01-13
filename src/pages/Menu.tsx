@@ -27,7 +27,8 @@ export default function Menu() {
         <Grid size={{ xs: 12, sm: 4 }}> 
           <Paper style={{ padding: '20px', textAlign: 'center' }}>
             <Typography variant="h6">💰 Financeiro</Typography>
-            <Button variant="outlined" fullWidth style={{ marginTop: '10px' }}>
+            <Button variant="outlined" fullWidth style={{ marginTop: '10px' }}
+            onClick={() => navigate('/lancamentos')}>
               Ver Lançamentos
             </Button>
           </Paper>
@@ -52,6 +53,21 @@ export default function Menu() {
             <Typography variant="h6">⚙️ Configurações</Typography>
             <Button variant="outlined" fullWidth style={{ marginTop: '10px' }}>
               Tipos de Lançamento
+            </Button>
+          </Paper>
+        </Grid>
+
+        {/* OPÇÃO 4: DASHBOARD (NOVO!) */}
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <Paper style={{ padding: '20px', textAlign: 'center' }}>
+            <Typography variant="h6">📊 Visão Geral</Typography>
+            <Button 
+              variant="outlined" // Botão preenchido (azul) para destacar
+              fullWidth 
+              style={{ marginTop: '10px' }}
+              onClick={() => navigate('/Dashboard')} // Leva para o Dashboard
+            >
+              Ver Gráficos
             </Button>
           </Paper>
         </Grid>
