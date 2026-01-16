@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import {
-  Container, Typography, List, ListItem, ListItemText, Paper, Divider,
-  IconButton, Button, Box, Fab, Dialog, DialogTitle, DialogContent,
+import { 
+  Container, Typography, List, ListItem, ListItemText, Paper, Divider, 
+  IconButton, Button, Box, Fab, Dialog, DialogTitle, DialogContent, 
   TextField, DialogActions, MenuItem, Select, InputLabel, FormControl,
-  ToggleButton, ToggleButtonGroup
+  ToggleButton, ToggleButtonGroup 
 } from '@mui/material';
 
-// --- IMPORTAÇÃO DOS ÍCONES (Verifique se estão todos aqui!) ---
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
+// Ícones
+import DeleteIcon from '@mui/icons-material/Delete'; 
+import AddIcon from '@mui/icons-material/Add'; 
+import EditIcon from '@mui/icons-material/Edit'; 
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'; // 📈 Agora vamos usar de verdade!
+
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,7 +20,7 @@ interface Lancamento {
   descricao: string;
   valor: number;
   dataLancamento: string;
-  tipo: number;
+  tipo: number; // 1=Receita, 2=Despesa, 3=Investimento
   categoriaId: string;
 }
 
@@ -29,31 +31,32 @@ interface Categoria {
 
 export default function Lancamentos() {
   const navigate = useNavigate();
-
+  
   const [extrato, setExtrato] = useState<Lancamento[]>([]);
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
-
+  const [categorias, setCategorias] = useState<Categoria[]>([]); 
+  
   const [open, setOpen] = useState(false);
-
-  const [idEdicao, setIdEdicao] = useState('');
+  
+  // Estados do Formulário
+  const [idEdicao, setIdEdicao] = useState(''); 
   const [descricao, setDescricao] = useState('');
   const [valor, setValor] = useState('');
-  const [categoriaId, setCategoriaId] = useState('');
-  const [tipo, setTipo] = useState(2);
+  const [categoriaId, setCategoriaId] = useState(''); 
+  const [tipo, setTipo] = useState(2); 
 
   useEffect(() => {
     async function carregarDados() {
-      try {
-        const respLancamentos = await api.get('/Lancamentos');
-        setExtrato(respLancamentos.data);
+    try {
+      const respLancamentos = await api.get('/Lancamentos');
+      setExtrato(respLancamentos.data);
 
-        const respCategorias = await api.get('/Categorias');
-        setCategorias(respCategorias.data);
-      } catch (erro) {
-        console.error("Erro ao carregar dados", erro);
-      }
+      const respCategorias = await api.get('/Categorias');
+      setCategorias(respCategorias.data);
+    } catch (erro) {
+      console.error("Erro ao carregar dados", erro);
     }
-
+  }
+  
     carregarDados();
   }, []);
 
@@ -70,7 +73,7 @@ export default function Lancamentos() {
   }
 
   function abrirNovo() {
-    setIdEdicao('');
+    setIdEdicao(''); 
     setDescricao('');
     setValor('');
     setCategoriaId('');
@@ -79,7 +82,7 @@ export default function Lancamentos() {
   }
 
   function abrirEdicao(item: Lancamento) {
-    setIdEdicao(item.id);
+    setIdEdicao(item.id); 
     setDescricao(item.descricao);
     setValor(item.valor.toString());
     setCategoriaId(item.categoriaId);
@@ -106,10 +109,10 @@ export default function Lancamentos() {
         await api.post('/Lancamentos', payload);
         alert('Lançamento criado!');
       }
-
-      setOpen(false);
-      carregarDados();
-
+      
+      setOpen(false); 
+      carregarDados(); 
+      
     } catch (erro) {
       console.error(erro);
       alert('Erro ao salvar.');
@@ -117,7 +120,7 @@ export default function Lancamentos() {
   }
 
   async function deletar(id: string) {
-    if (!confirm("Tem certeza que quer apagar?")) return;
+    if(!confirm("Tem certeza que quer apagar?")) return;
     try {
       await api.delete(`/Lancamentos/${id}`);
       setExtrato(atual => atual.filter(item => item.id !== id));
@@ -127,58 +130,82 @@ export default function Lancamentos() {
     }
   }
 
+  // Função auxiliar para decidir a cor do VALOR
+  const getCorValor = (tipo: number) => {
+    if (tipo === 1) return 'green';      
+    if (tipo === 2) return 'red';        
+    if (tipo === 3) return '#1976d2';    // Azul
+    return 'black';
+  };
+
   return (
     <Container maxWidth="md" style={{ marginTop: '50px', paddingBottom: '100px' }}>
-
-      {/* CABEÇALHO COM BOTÃO EXTRA DE SEGURANÇA */}
+      
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Box>
-          <Typography variant="h4">Meu Extrato 💲</Typography>
-          {/* Botão de texto caso o flutuante suma */}
-          <Button size="small" startIcon={<AddIcon />} onClick={abrirNovo}>
-            Novo Lançamento
-          </Button>
+            <Typography variant="h4">Meu Extrato 💲</Typography>
+            <Button size="small" startIcon={<AddIcon />} onClick={abrirNovo}>
+                Novo Lançamento
+            </Button>
         </Box>
         <Button variant="outlined" onClick={() => navigate('/menu')}>Voltar</Button>
       </Box>
 
-      {/* LISTA */}
       <Paper elevation={3}>
         <List>
           {extrato.map((item) => (
             <div key={item.id}>
-              <ListItem
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
+              <ListItem 
+                sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
                   alignItems: 'center',
                   paddingRight: 2
                 }}
               >
-                <ListItemText
-                  primary={item.descricao}
-                  secondary={new Date(item.dataLancamento).toLocaleDateString()}
+                <ListItemText 
+                  primary={item.descricao} 
+                  secondary={new Date(item.dataLancamento).toLocaleDateString()} 
                   sx={{ maxWidth: '50%' }}
                 />
-
+                
                 <Box display="flex" alignItems="center">
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: item.tipo === 2 ? 'red' : 'green',
-                      fontWeight: 'bold',
-                      mr: 2,
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    {item.tipo === 2 ? '- ' : '+ '}
-                    R$ {item.valor.toFixed(2)}
-                  </Typography>
+                  
+                  {/* ÁREA DO VALOR E ÍCONE */}
+                  <Box display="flex" alignItems="center" mr={2}>
+                    {/* Se for Investimento (3), mostra o ícone. Se não, mostra + ou - */}
+                    {item.tipo === 3 ? (
+                        <TrendingUpIcon sx={{ color: '#1976d2', marginRight: 1 }} fontSize="small" />
+                    ) : (
+                        <Typography 
+                            component="span" 
+                            sx={{ 
+                                fontWeight: 'bold', 
+                                marginRight: 1, 
+                                color: item.tipo === 1 ? 'green' : 'red' 
+                            }}
+                        >
+                            {item.tipo === 1 ? '+ ' : '- '}
+                        </Typography>
+                    )}
 
+                    <Typography 
+                        variant="body1" 
+                        sx={{ 
+                        color: getCorValor(item.tipo),
+                        fontWeight: 'bold',
+                        whiteSpace: 'nowrap'
+                        }}
+                    >
+                        R$ {item.valor.toFixed(2)}
+                    </Typography>
+                  </Box>
+
+                  {/* BOTÕES DE AÇÃO */}
                   <IconButton onClick={() => abrirEdicao(item)} size="small" sx={{ mr: 1 }}>
                     <EditIcon color="primary" />
                   </IconButton>
-
+                  
                   <IconButton onClick={() => deletar(item.id)} size="small">
                     <DeleteIcon color="error" />
                   </IconButton>
@@ -191,36 +218,33 @@ export default function Lancamentos() {
         </List>
       </Paper>
 
-      {/* 🚨 O RESGATE DO BOTÃO FLUTUANTE 🚨 */}
-      {/* zIndex 9999 garante que ele fique na frente de tudo */}
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{
-          position: 'fixed',
-          bottom: 20,
-          right: 20,
-          zIndex: 9999
-        }}
+      <Fab 
+        color="primary" 
+        sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 9999 }}
         onClick={abrirNovo}
       >
         <AddIcon />
       </Fab>
 
-
-      {/* JANELA MODAL */}
       <Dialog open={open} onClose={() => setOpen(false)} fullWidth>
         <DialogTitle>{idEdicao ? 'Editar Lançamento' : 'Novo Lançamento'}</DialogTitle>
         <DialogContent>
+          
           <Box display="flex" justifyContent="center" mb={2} mt={1}>
-            <ToggleButtonGroup
-              value={tipo}
-              exclusive
-              onChange={(e, novoTipo) => { if (novoTipo) setTipo(novoTipo) }}
-            >
-              <ToggleButton value={1} color="success">💰 Receita</ToggleButton>
-              <ToggleButton value={2} color="error">💸 Despesa</ToggleButton>
-            </ToggleButtonGroup>
+             <ToggleButtonGroup
+                value={tipo}
+                exclusive
+                onChange={(e, novoTipo) => { if(novoTipo) setTipo(novoTipo) }}
+                aria-label="Tipo de Lançamento"
+             >
+                <ToggleButton value={1} sx={{ color: 'green' }}>💰 Receita</ToggleButton>
+                <ToggleButton value={2} sx={{ color: 'red' }}>💸 Despesa</ToggleButton>
+                
+                {/* AQUI ESTÁ O ÍCONE SENDO USADO 👇 */}
+                <ToggleButton value={3} sx={{ color: '#1976d2' }}>
+                    <TrendingUpIcon sx={{ mr: 1 }} /> Investimento
+                </ToggleButton>
+             </ToggleButtonGroup>
           </Box>
 
           <TextField
