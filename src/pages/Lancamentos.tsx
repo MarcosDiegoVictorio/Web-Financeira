@@ -56,7 +56,7 @@ export default function Lancamentos() {
       console.error("Erro ao carregar dados", erro);
     }
   }
-  
+
     carregarDados();
   }, []);
 
@@ -234,7 +234,7 @@ export default function Lancamentos() {
              <ToggleButtonGroup
                 value={tipo}
                 exclusive
-                onChange={(e, novoTipo) => { if(novoTipo) setTipo(novoTipo) }}
+                onChange={(_,novoTipo) => { if(novoTipo) setTipo(novoTipo) }}
                 aria-label="Tipo de Lançamento"
              >
                 <ToggleButton value={1} sx={{ color: 'green' }}>💰 Receita</ToggleButton>

@@ -160,7 +160,7 @@ export default function Dashboard() {
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {dadosGrafico.map((entry, index) => (
+                      {dadosGrafico.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={CORES[index % CORES.length]} />
                       ))}
                     </Pie>
